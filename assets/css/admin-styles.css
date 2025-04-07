@@ -1,0 +1,34 @@
+.link-item {
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-left: 4px solid #0073aa;
+}
+.thumb-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+#pa-grid-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 10px;
+}
+#pa-grid-preview .pa-grid-item {
+    overflow: hidden;
+    transition: all 0.3s;
+}
+.style-default .pa-grid-item:hover img {
+    transform: scale(1.1);
+}
+.style-border .pa-grid-item:hover {
+    border: 2px solid #0073aa;
+}
+.style-darken .pa-grid-item:hover img {
+    filter: brightness(0.7);
+}
+.pa-grid-item img {
+    width: 100%;
+    display: block;
+    transition: all 0.3s;
+}
