@@ -4,7 +4,9 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
     public function init() {
         $this->name = esc_html__('Website Grid', 'dwgp');
         $this->icon = 'apps'; // Divi-Icon
+        $this->slug = 'dwgp_website_grid'; // Add this line
         $this->main_css_element = '%%order_class%%.dwgp_website_grid';
+        $this->vb_support = 'on'; // Add Visual Builder support
         
         $this->settings_modal_toggles = array(
             'general' => array(
@@ -243,67 +245,89 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
         $item_shadow = $this->props['item_shadow'];
         $item_hover_effect = $this->props['item_hover_effect'];
         
+        // Use the updated method for setting styles
         // Grid Styles
-        ET_Builder_Element::set_style($render_slug, array(
-            'selector' => '%%order_class%% .dwgp-grid',
-            'declaration' => sprintf(
-                'display: grid; grid-template-columns: repeat(%s, 1fr); gap: %spx;',
-                $columns_desktop,
-                $grid_gap
+        $this->generate_styles(
+            array(
+                'selector'    => '%%order_class%% .dwgp-grid',
+                'declaration' => sprintf(
+                    'display: grid; grid-template-columns: repeat(%s, 1fr); gap: %spx;',
+                    $columns_desktop,
+                    $grid_gap
+                ),
             ),
-        ));
+            $render_slug
+        );
         
         // Responsive Grid Styles (Tablet)
-        ET_Builder_Element::set_style($render_slug, array(
-            'selector' => '%%order_class%% .dwgp-grid',
-            'declaration' => sprintf(
-                'grid-template-columns: repeat(%s, 1fr);',
-                $columns_tablet
+        $this->generate_styles(
+            array(
+                'selector'    => '%%order_class%% .dwgp-grid',
+                'declaration' => sprintf(
+                    'grid-template-columns: repeat(%s, 1fr);',
+                    $columns_tablet
+                ),
+                'media_query' => ET_Builder_Element::get_media_query('max_width_980'),
             ),
-            'media_query' => ET_Builder_Element::get_media_query('max_width_980'),
-        ));
+            $render_slug
+        );
         
         // Responsive Grid Styles (Mobile)
-        ET_Builder_Element::set_style($render_slug, array(
-            'selector' => '%%order_class%% .dwgp-grid',
-            'declaration' => sprintf(
-                'grid-template-columns: repeat(%s, 1fr);',
-                $columns_mobile
+        $this->generate_styles(
+            array(
+                'selector'    => '%%order_class%% .dwgp-grid',
+                'declaration' => sprintf(
+                    'grid-template-columns: repeat(%s, 1fr);',
+                    $columns_mobile
+                ),
+                'media_query' => ET_Builder_Element::get_media_query('max_width_767'),
             ),
-            'media_query' => ET_Builder_Element::get_media_query('max_width_767'),
-        ));
+            $render_slug
+        );
         
         // Item Styles
-        ET_Builder_Element::set_style($render_slug, array(
-            'selector' => '%%order_class%% .dwgp-item',
-            'declaration' => sprintf(
-                'border-radius: %spx; overflow: %s; transition: all 0.3s ease;',
-                $item_border_radius,
-                $item_overflow
+        $this->generate_styles(
+            array(
+                'selector'    => '%%order_class%% .dwgp-item',
+                'declaration' => sprintf(
+                    'border-radius: %spx; overflow: %s; transition: all 0.3s ease;',
+                    $item_border_radius,
+                    $item_overflow
+                ),
             ),
-        ));
+            $render_slug
+        );
         
         // Shadow Style
         if ($item_shadow === 'on') {
-            ET_Builder_Element::set_style($render_slug, array(
-                'selector' => '%%order_class%% .dwgp-item',
-                'declaration' => 'box-shadow: 0 4px 10px rgba(0,0,0,0.1);',
-            ));
+            $this->generate_styles(
+                array(
+                    'selector'    => '%%order_class%% .dwgp-item',
+                    'declaration' => 'box-shadow: 0 4px 10px rgba(0,0,0,0.1);',
+                ),
+                $render_slug
+            );
         }
         
         // Hover Effekte
         if ($item_hover_effect === 'scale' || $item_hover_effect === 'both') {
-            ET_Builder_Element::set_style($render_slug, array(
-                'selector' => '%%order_class%% .dwgp-item:hover',
-                'declaration' => 'transform: scale(1.05);',
-            ));
+            $this->generate_styles(
+                array(
+                    'selector'    => '%%order_class%% .dwgp-item:hover',
+                    'declaration' => 'transform: scale(1.05);',
+                ),
+                $render_slug
+            );
         }
         
         if ($item_hover_effect === 'shadow' || $item_hover_effect === 'both') {
-            ET_Builder_Element::set_style($render_slug, array(
-                'selector' => '%%order_class%% .dwgp-item:hover',
-                'declaration' => 'box-shadow: 0 10px 30px rgba(0,0,0,0.15);',
-            ));
+            $this->generate_styles(
+                array(
+                    'selector'    => '%%order_class%% .dwgp-item:hover',
+                    'declaration' => 'box-shadow: 0 10px 30px rgba(0,0,0,0.15);',
+                ),
+                $render_slug
+            );
         }
         
         // Sammle alle Websites
@@ -336,7 +360,7 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
             }
             
             $output .= sprintf(
-                '<a href="%s" class="dwgp-item" target="_blank">
+                '<a href="%s" class="dwgp-item" target="_blank" rel="noopener noreferrer">
                     %s
                     <div class="dwgp-item-title">%s</div>
                 </a>',
@@ -349,6 +373,16 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
         $output .= '</div>';
         
         return $output;
+    }
+    
+    // Helper method to generate styles to avoid deprecated ET_Builder_Element::set_style
+    protected function generate_styles($args, $render_slug) {
+        if (method_exists($this, 'generate_css')) {
+            $this->generate_css($args);
+        } else {
+            // Fallback for older Divi versions
+            ET_Builder_Element::set_style($render_slug, $args);
+        } 
     }
 }
 

@@ -1,6 +1,9 @@
 .dwgp-grid {
     width: 100%;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
 
 .dwgp-item {
@@ -8,6 +11,15 @@
     text-decoration: none;
     background-color: #ffffff;
     height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dwgp-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 .dwgp-item-image {
@@ -36,4 +48,17 @@
     font-weight: 600;
     color: #333;
     text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 980px) {
+    .dwgp-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .dwgp-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
