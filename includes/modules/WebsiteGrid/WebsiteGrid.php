@@ -1,6 +1,8 @@
 <?php
 
-name = esc_html__('Website Grid', 'dwgp');
+class DWGP_WebsiteGrid extends ET_Builder_Module {
+    public function init() {
+        $this->name = esc_html__('Website Grid', 'dwgp');
         $this->icon = 'apps'; // Divi-Icon
         $this->main_css_element = '%%order_class%%.dwgp_website_grid';
         
@@ -321,30 +323,30 @@ name = esc_html__('Website Grid', 'dwgp');
         }
         
         // HTML Ausgabe
-        $output = '';
+        $output = '<div class="dwgp-grid">';
         
         foreach ($websites as $website) {
             $image_output = '';
             if (!empty($website['image'])) {
                 $image_output = sprintf(
-                    '',
+                    '<div class="dwgp-item-image"><img src="%s" alt="%s"></div>',
                     esc_url($website['image']),
                     esc_attr($website['title'])
                 );
             }
             
             $output .= sprintf(
-                '
+                '<a href="%s" class="dwgp-item" target="_blank">
                     %s
-                    %s
-                ',
+                    <div class="dwgp-item-title">%s</div>
+                </a>',
                 esc_url($website['url']),
                 $image_output,
                 esc_html($website['title'])
             );
         }
         
-        $output .= '';
+        $output .= '</div>';
         
         return $output;
     }
