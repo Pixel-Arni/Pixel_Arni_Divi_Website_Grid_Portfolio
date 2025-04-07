@@ -377,7 +377,7 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
     }
     
     // Changed from protected to public to match parent class
-    public function generate_styles($args = [], $render_slug) {
+    public function generate_styles($render_slug, $args = []) {
         if (method_exists($this, 'generate_css')) {
             $this->generate_css($args);
         } else {
