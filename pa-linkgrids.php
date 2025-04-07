@@ -3,7 +3,7 @@
 Plugin Name: Pixel Arni LinkGrids
 Description: Erstelle schöne, responsive Link-Grids mit Thumbnails und Hover-Effekten.
 Version: 1.0
-Author: Dein Name
+Author: Arnold Diez
 */
 
 if (!defined('ABSPATH')) exit;
