@@ -190,12 +190,12 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $addNewGridItemButton.on('click', function() {
-        var gridId = $gridIdInput.val();
-        if (!gridId) {
-            showNotice(portfolioGridBuilderAdmin.save_grid_first, 'warning');
-            return;
-        }
+$addNewGridItemButton.on('click', function() {
+    var gridId = parseInt($gridIdInput.val(), 10);
+    if (!gridId || gridId === 0 || isNaN(gridId)) {
+        showNotice(portfolioGridBuilderAdmin.save_grid_first, 'warning');
+        return;
+    }
         $.ajax({
             url: portfolioGridBuilderAdmin.ajax_url,
             type: 'POST',

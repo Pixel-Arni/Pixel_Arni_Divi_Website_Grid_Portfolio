@@ -118,21 +118,23 @@ class Portfolio_Grid_Builder_Admin {
 		wp_send_json_success( array( 'message' => __( 'Grid gespeichert!', 'portfolio-grid-builder' ) ) );
 	}
 
-	/**
-	 * Lädt die Daten eines bestimmten Portfolio-Grids.
-	 */
-	public function load_portfolio_grid() {
-		$this->check_ajax_nonce();
+/**
+ * Lädt die Daten eines bestimmten Portfolio-Grids.
+ */
+public function load_portfolio_grid() {
+    $this->check_ajax_nonce();
 
-		$grid_id   = isset( $_POST['grid_id'] ) ? intval( $_POST['grid_id'] ) : 0;
-		$grid_data = get_option( 'portfolio_grids', array() );
+    $grid_id  = isset( $_POST['grid_id'] ) ? intval( $_POST['grid_id'] ) : 0;
+    $grid_data = get_option( 'portfolio_grids', array() );
 
-		if ( isset( $grid_data[ $grid_id ] ) ) {
-			wp_send_json_success( $grid_data[ $grid_id ] );
-		} else {
-			wp_send_json_error( array( 'message' => __( 'Grid nicht gefunden.', 'portfolio-grid-builder' ) ) );
-		}
-	}
+    if ( $grid_id === 0 ) {
+        wp_send_json_success( $grid_data );
+    } elseif ( isset( $grid_data[ $grid_id ] ) ) {
+        wp_send_json_success( $grid_data[ $grid_id ] );
+    } else {
+        wp_send_json_error( array( 'message' => __( 'Grid nicht gefunden.', 'portfolio-grid-builder' ) ) );
+    }
+}
 
 	/**
 	 * Löscht ein Portfolio-Grid.
