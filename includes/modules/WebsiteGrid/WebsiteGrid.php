@@ -234,7 +234,8 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
         );
     }
     
-    public function render($attrs, $content = null, $render_slug) {
+    // Fixed parameter order: required parameters before optional ones
+    public function render($attrs, $render_slug, $content = null) {
         // CSS generieren
         $columns_desktop = $this->props['columns_desktop'];
         $columns_tablet = $this->props['columns_tablet'];
@@ -375,8 +376,8 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
         return $output;
     }
     
-    // Helper method to generate styles to avoid deprecated ET_Builder_Element::set_style
-    protected function generate_styles($args, $render_slug) {
+    // Changed from protected to public to match parent class
+    public function generate_styles($args, $render_slug) {
         if (method_exists($this, 'generate_css')) {
             $this->generate_css($args);
         } else {
