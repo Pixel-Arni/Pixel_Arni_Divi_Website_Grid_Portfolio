@@ -1,76 +1,56 @@
 <?php
-function pa_add_linkgrid_meta_box() {
-    add_meta_box(
-        'pa_linkgrid_links',
-        'Link-Einträge',
-        'pa_render_linkgrid_meta_box',
-        'par_linkgrid',
-        'normal',
-        'high'
-    );
-}
-add_action('add_meta_boxes', 'pa_add_linkgrid_meta_box');
+if (!defined('ABSPATH')) exit;
 
-function pa_render_linkgrid_meta_box($post) {
+add_action('add_meta_boxes', function() {
+    add_meta_box('pa_linkgrid_meta', 'Grid-Inhalte', 'pa_render_linkgrid_meta', 'pa_linkgrid', 'normal', 'high');
+});
+
+function pa_render_linkgrid_meta($post) {
+    wp_nonce_field('pa_linkgrid_nonce', 'pa_linkgrid_nonce_field');
     $entries = get_post_meta($post->ID, '_pa_links', true) ?: [];
     $style = get_post_meta($post->ID, '_pa_grid_style', true) ?: 'style-default';
 
-    echo '<div id="pa-link-repeater">';
-    echo '<button type="button" class="button add-link">+ Link hinzufügen</button>';
-    echo '<div class="link-items">';
-
-    foreach ($entries as $entry) {
-        echo '<div class="link-item">';
-        echo '<input type="text" class="pa-link-url" name="pa_links[url][]" value="' . esc_attr($entry['url']) . '" placeholder="Link URL" />';
-        
-        echo '<div class="thumb-selector">';
-        echo '<input type="text" class="pa-thumb-url" name="pa_links[thumb][]" value="' . esc_attr($entry['thumb']) . '" placeholder="Thumbnail URL" />';
-        echo '<button class="button select-thumb">Bild auswählen</button>';
-        echo '</div>';
-
-        echo '<button class="button remove-link">– Entfernen</button>';
-        echo '</div>';
-    }
-
-    echo '</div></div>';
-
-    // Grid Style Auswahl
-    echo '<h3>Grid Stil & Hover</h3>';
+    echo '<label>Stil auswählen:</label> ';
     echo '<select name="pa_grid_style">';
-    $options = [
-        'style-default' => 'Standard (Fade + Zoom)',
-        'style-border' => 'Hover mit Border',
-        'style-darken' => 'Dunkler Overlay beim Hover'
-    ];
-    foreach ($options as $key => $label) {
-        echo '<option value="'. esc_attr($key) .'" ' . selected($key, $style, false) . '>' . esc_html($label) . '</option>';
+    $styles = ['style-default' => 'Standard', 'style-border' => 'Border', 'style-darken' => 'Darken'];
+    foreach ($styles as $key => $label) {
+        echo '<option value="' . $key . '"' . selected($style, $key, false) . '>' . $label . '</option>';
     }
-    echo '</select>';
+    echo '</select><br><br>';
 
-    // Live Vorschau
-    echo '<div id="pa-grid-preview" class="pa-grid '. esc_attr($style) .'" style="margin-top: 20px;">';
-    echo '<div class="pa-grid-item"><img src="https://via.placeholder.com/150" /></div>';
-    echo '<div class="pa-grid-item"><img src="https://via.placeholder.com/150" /></div>';
-    echo '</div>';
-}
-
-
-function pa_save_linkgrid_meta($post_id) {
-    if (!isset($_POST['pa_links'])) return;
-    $urls = $_POST['pa_links']['url'];
-    $thumbs = $_POST['pa_links']['thumb'];
-
-    $data = [];
-    for ($i = 0; $i < count($urls); $i++) {
-        if (!empty($urls[$i])) {
-            $data[] = ['url' => esc_url($urls[$i]), 'thumb' => esc_url($thumbs[$i])];
+    echo '<div id="pa-linkgrid-wrapper">';
+    if (!empty($entries)) {
+        foreach ($entries as $index => $entry) {
+            echo pa_render_grid_item($entry['url'], $entry['thumb'], $index);
         }
     }
+    echo '</div>';
+    echo '<button type="button" class="button" id="pa-add-grid-item">+ Link hinzufügen</button>';
 
-    update_post_meta($post_id, '_pa_links', $data);
-	if (isset($_POST['pa_grid_style'])) {
-    update_post_meta($post_id, '_pa_grid_style', sanitize_text_field($_POST['pa_grid_style']));
+    echo '<script>
+    let paIndex = ' . count($entries) . ';
+    document.getElementById("pa-add-grid-item").addEventListener("click", function() {
+        const container = document.getElementById("pa-linkgrid-wrapper");
+        const html = `' . pa_render_grid_item('', '', '__index__') . '`.replace(/__index__/g, paIndex);
+        container.insertAdjacentHTML("beforeend", html);
+        paIndex++;
+    });
+    </script>';
 }
 
+function pa_render_grid_item($url, $thumb, $index) {
+    return '<div class="pa-grid-item-admin" style="margin-bottom:10px;">
+        <input type="url" name="pa_links['.$index.'][url]" value="'.esc_attr($url).'" placeholder="Link URL" style="width:40%;" />
+        <input type="text" name="pa_links['.$index.'][thumb]" value="'.esc_attr($thumb).'" placeholder="Thumbnail URL" style="width:40%;" />
+        <button type="button" class="button pa-media-upload">📁</button>
+    </div>';
 }
-add_action('save_post', 'pa_save_linkgrid_meta');
+
+add_action('save_post', function($post_id) {
+    if (!isset($_POST['pa_linkgrid_nonce_field']) || !wp_verify_nonce($_POST['pa_linkgrid_nonce_field'], 'pa_linkgrid_nonce')) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+    update_post_meta($post_id, '_pa_links', $_POST['pa_links'] ?? []);
+    update_post_meta($post_id, '_pa_grid_style', $_POST['pa_grid_style'] ?? 'style-default');
+});
+?>

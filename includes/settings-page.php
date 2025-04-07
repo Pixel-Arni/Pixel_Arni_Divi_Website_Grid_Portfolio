@@ -1,8 +1,6 @@
 <?php
-// Sicherheitscheck
 if (!defined('ABSPATH')) exit;
 
-// Menüeintrag hinzufügen
 add_action('admin_menu', function() {
     add_submenu_page(
         'edit.php?post_type=pa_linkgrid',
@@ -14,7 +12,6 @@ add_action('admin_menu', function() {
     );
 });
 
-// Einstellungen registrieren
 add_action('admin_init', function() {
     register_setting('pa_settings_group', 'pa_linkgrid_settings');
 
@@ -45,7 +42,6 @@ add_action('admin_init', function() {
     }, 'pa-linkgrid-settings', 'pa_settings_main');
 });
 
-// Settings-Page-HTML
 function pa_render_settings_page() {
     ?>
     <div class="wrap">
@@ -60,3 +56,4 @@ function pa_render_settings_page() {
     </div>
     <?php
 }
+?>
