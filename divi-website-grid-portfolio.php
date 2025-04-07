@@ -40,6 +40,3 @@ $divi_website_grid = new Divi_Website_Grid_Portfolio();
 
 // Aktivierungshook
 register_activation_hook(__FILE__, array('Divi_Website_Grid_Portfolio', 'activate'));
-```
-
-## Ordner: includes/modules/WebsiteGrid/WebsiteGrid.php

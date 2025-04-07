@@ -1,3 +1,5 @@
+<?php
+
 name = esc_html__('Website Grid', 'dwgp');
         $this->icon = 'apps'; // Divi-Icon
         $this->main_css_element = '%%order_class%%.dwgp_website_grid';
