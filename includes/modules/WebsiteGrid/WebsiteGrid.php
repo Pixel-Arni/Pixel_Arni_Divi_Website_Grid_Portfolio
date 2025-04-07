@@ -238,7 +238,7 @@ class DWGP_WebsiteGrid extends ET_Builder_Module {
     public function render($attrs, $render_slug, $content = null) {
         // CSS generieren
         $columns_desktop = $this->props['columns_desktop'];
-        $columns_tablet = $->props['columns_tablet'];
+        $columns_tablet = $this->props['columns_tablet'];
         $columns_mobile = $this->props['columns_mobile'];
         $grid_gap = $this->props['grid_gap'];
         $item_border_radius = $this->props['item_border_radius'];
