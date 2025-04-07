@@ -5,7 +5,7 @@
  * Plugin URI: https://pixelarni.de/
  * Description: Erstellt ein responsives Portfolio-Grid mit anpassbaren Links und Thumbnails im WordPress Dashboard.
  * Version: 1.0.0
- * Author: Dein Name
+ * Author: Arnold Diez
  * Author URI: https://pixelarni.de/
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -29,26 +29,33 @@ spl_autoload_register( 'portfolio_grid_builder_autoload' );
  * @param string $class_name Der Name der Klasse.
  */
 function portfolio_grid_builder_autoload( $class_name ) {
-	if ( false === strpos( $class_name, 'Portfolio_Grid_Builder' ) ) {
-		return;
-	}
-
-	$file_base = dirname( __FILE__ ) . '/';
-	$class_path = str_replace( '_', '-', strtolower( str_replace( 'Portfolio_Grid_Builder_', '', $class_name ) ) );
-	$file_name  = 'class-' . $class_path . '.php';
-
-	if ( file_exists( $file_base . 'includes/' . $file_name ) ) {
-		require_once $file_base . 'includes/' . $file_name;
-	} elseif ( file_exists( $file_base . 'admin/' . $file_name ) ) {
-		require_once $file_base . 'admin/' . $file_name;
-	} elseif ( file_exists( $file_base . 'admin/partials/' . $file_name ) ) {
-		require_once $file_base . 'admin/partials/' . $file_name;
-	} elseif ( file_exists( $file_base . 'public/' . $file_name ) ) {
-		require_once $file_base . 'public/' . $file_name;
-	} elseif ( file_exists( $file_base . 'public/partials/' . $file_name ) ) {
-		require_once $file_base . 'public/partials/' . $file_name;
+	if ( strpos( $class_name, 'Portfolio_Grid_Builder' ) === 0 ) {
+		$file_name = 'class-' . str_replace( '_', '-', strtolower( str_replace( 'Portfolio_Grid_Builder_', '', $class_name ) ) ) . '.php';
+		$directories = array(
+			'includes',
+			'admin',
+			'admin/partials',
+			'public',
+			'public/partials',
+		);
+		foreach ( $directories as $dir ) {
+			$path = plugin_dir_path( __FILE__ ) . $dir . '/' . $file_name;
+			if ( file_exists( $path ) ) {
+				require_once $path;
+				return;
+			}
+		}
 	}
 }
+
+/**
+ * Include the activator class directly.
+ */
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-portfolio-grid-builder-activator.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-portfolio-grid-builder-deactivator.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-portfolio-grid-builder.php';
+require_once plugin_dir_path( __FILE__ ) . 'admin/class-portfolio-grid-builder-admin.php';
+require_once plugin_dir_path( __FILE__ ) . 'public/class-portfolio-grid-builder-public.php';
 
 /**
  * Das Core-Plugin laden.
