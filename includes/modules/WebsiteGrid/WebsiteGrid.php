@@ -1,6 +1,8 @@
 <?php
 
 class DWGP_WebsiteGrid extends ET_Builder_Module {
+    public $icon; // Deklaration der $icon-Eigenschaft
+
     public function init() {
         $this->name = esc_html__('Website Grid', 'dwgp');
         $this->icon = 'apps'; // Divi-Icon
